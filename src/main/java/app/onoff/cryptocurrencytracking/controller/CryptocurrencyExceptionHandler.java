@@ -3,6 +3,7 @@ package app.onoff.cryptocurrencytracking.controller;
 import app.onoff.cryptocurrencytracking.exception.CryptocurrencyNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -16,8 +17,16 @@ public class CryptocurrencyExceptionHandler {
     public String handleCryptcurrencyNotFoundException(CryptocurrencyNotFoundException e) {
         return String.format("ERROR: %s", e.getMessage());
     }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public String handleHttpMessageNotReadableException(HttpMessageNotReadableException e){
         return String.format("ERROR: %s", "JSON body is not in correct format");
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public String handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        StringBuilder sb = new StringBuilder();
+        e.getBindingResult().getAllErrors().forEach(err->sb.append(err.getDefaultMessage()).append("  ;  "));
+        return String.format("ERROR: %s", sb);
     }
 }
